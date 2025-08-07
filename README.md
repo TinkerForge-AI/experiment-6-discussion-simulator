@@ -6,7 +6,7 @@
    ```bash
    npm install
    ```
-2. Copy `.env.example` to `.env` and fill in your `OPENAI_API_KEY` if using real LLM.
+2. Copy `.env.example` to `.env` and fill in your `GEMINI_API_KEY` if using real LLM.
 3. Run in development mode:
    ```bash
    npm run dev
