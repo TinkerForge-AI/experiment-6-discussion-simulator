@@ -28,14 +28,17 @@ describe('llmClient service', () => {
     expect(metrics.tokenUsage['PRAG'].length).toBeGreaterThan(0);
   });
 
+  let originalSendPrompt;
+  beforeEach(() => {
+    originalSendPrompt = require('../../src/services/mockLLMClient').prototype.sendPrompt;
+  });
+  afterEach(() => {
+    require('../../src/services/mockLLMClient').prototype.sendPrompt = originalSendPrompt;
+  });
+
   it('retries on error (mock)', async () => {
     // Simulate error by temporarily replacing sendPrompt
-    const originalSendPrompt = require('../../src/services/mockLLMClient').prototype.sendPrompt;
     require('../../src/services/mockLLMClient').prototype.sendPrompt = async () => { throw new Error('fail'); };
-    try {
-      await expect(callLLM('System', 'Prompt', 0.3, 64, 'PRAG')).rejects.toThrow('fail');
-    } finally {
-      require('../../src/services/mockLLMClient').prototype.sendPrompt = originalSendPrompt;
-    }
+    await expect(callLLM('System', 'Prompt', 0.3, 64, 'PRAG')).rejects.toThrow('fail');
   });
 });

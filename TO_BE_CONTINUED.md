@@ -1,11 +1,3 @@
-Prompt 1.2 - LLM Client Interface
-Create src/services/llmClient.js that:
-- Checks USE_MOCK_LLM environment variable
-- If true, delegates to mockLLMClient
-- If false, initializes real OpenAI client
-- Exports unified interface: callLLM(systemPrompt, userPrompt, temperature, maxTokens)
-- Implements exponential backoff retry logic
-- Logs all calls to metrics collector
 Prompt 1.3 - Context Manager
 Create src/utils/contextManager.js with:
 - ContextWindow class that maintains rolling conversation history

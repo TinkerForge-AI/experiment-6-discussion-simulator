@@ -1,3 +1,6 @@
+// Ensure environment variables are loaded
+require('dotenv').config();
+console.debug('llmClient.js loaded');
 const MockLLMClient = require('./mockLLMClient');
 const MetricsCollector = require('../utils/metrics');
 const useMock = process.env.USE_MOCK_LLM === 'true';
@@ -32,6 +35,7 @@ if (useMock) {
 }
 
 async function callLLM(systemPrompt, userPrompt, temperature, maxTokens, personaType) {
+  console.debug('callLLM called with:', { systemPrompt, userPrompt, temperature, maxTokens, personaType });
   let response, tokensUsed = 0;
   let attempt = 0;
   let delay = 500;
@@ -43,14 +47,22 @@ async function callLLM(systemPrompt, userPrompt, temperature, maxTokens, persona
         tokensUsed = response.split(' ').length;
       } else {
         response = await client.sendPrompt(systemPrompt, userPrompt, temperature, maxTokens);
+  console.debug('Sending prompt to LLM:', { systemPrompt, userPrompt, temperature, maxTokens });
         tokensUsed = response.split(' ').length;
       }
       metrics.addResponse(personaType, response, tokensUsed);
+  console.debug('Received response from LLM:', response);
+  console.debug('API call tracked. Total calls:', metrics.apiCalls);
       return response;
+  console.debug('Returning response:', response);
     } catch (err) {
+  console.debug('Error in callLLM:', err);
       attempt++;
       if (attempt >= maxAttempts) throw err;
       await new Promise(resolve => setTimeout(resolve, delay));
+  console.debug(`Retrying callLLM (attempt ${attempt + 1} of ${maxAttempts})`);
+  console.debug('Max retries reached. Throwing error.');
+console.debug('llmClient.js exports:', { callLLM });
       delay *= 2;
     }
   }
