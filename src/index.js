@@ -1,0 +1,6 @@
+require('dotenv').config();
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+// ...existing code...
+console.log(chalk.green('Discussion Simulator Started'));
+// ...existing code...
