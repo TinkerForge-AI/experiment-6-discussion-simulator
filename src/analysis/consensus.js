@@ -1,3 +1,51 @@
+function identifyConflicts(responses) {
+  // Find pairs of responses with very low agreement (potential contradiction)
+  const conflicts = [];
+  for (let i = 0; i < responses.length; i++) {
+    for (let j = i + 1; j < responses.length; j++) {
+      const score = agreementScore(responses[i], responses[j]);
+      if (score < 0.2) {
+        conflicts.push({ response1: responses[i], response2: responses[j], score });
+      }
+    }
+  }
+  return conflicts;
+}
+
+function classifyDisagreement(response1, response2) {
+  // Heuristic: factual (contradictory facts), approach (different methods), priority (different focus)
+  if (/not|never|no|impossible/.test(response1) && /yes|possible|can/.test(response2)) {
+    return 'factual';
+  }
+  if (/should|must|need/.test(response1) && /could|might|optional/.test(response2)) {
+    return 'priority';
+  }
+  // If both mention different methods/steps
+  if (/step|method|process/.test(response1) && /step|method|process/.test(response2) && agreementScore(response1, response2) < 0.4) {
+    return 'approach';
+  }
+  return 'unknown';
+}
+
+function promptResolution(conflict, personas) {
+  // Generate prompts for personas to resolve a conflict
+  return personas.map(p => `Persona ${p.name}, please address the disagreement between: "${conflict.response1}" and "${conflict.response2}"`);
+}
+
+class ConflictTracker {
+  constructor() {
+    this.conflictsByRound = {};
+  }
+  track(round, conflicts) {
+    this.conflictsByRound[round] = conflicts;
+  }
+  getConflicts(round) {
+    return this.conflictsByRound[round] || [];
+  }
+  getAllConflicts() {
+    return this.conflictsByRound;
+  }
+}
 // Consensus analysis utilities
 function agreementScore(response1, response2) {
   // Simple semantic similarity: keyword overlap and phrase matching
@@ -47,4 +95,8 @@ module.exports = {
   findConsensusGroups,
   identifyOutliers,
   trackConsensusEvolution
+  ,identifyConflicts
+  ,classifyDisagreement
+  ,promptResolution
+  ,ConflictTracker
 };
