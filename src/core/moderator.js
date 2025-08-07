@@ -2,6 +2,52 @@
 const ContextWindow = require('../utils/contextManager');
 
 class Moderator {
+  async runDeepDive(thread, callLLM, maxDepth = 3) {
+    // Focused exploration with clarify → explore → synthesize
+    const visited = new Set();
+    let depth = 0;
+    let currentTopic = thread.topic;
+    let results = [];
+    let effectiveness = 0;
+    while (depth < maxDepth && !visited.has(currentTopic)) {
+      visited.add(currentTopic);
+      // Automatic persona selection: pick those with relevant expertise
+      const expertPersonas = this.personas.filter(p => p.description && p.description.toLowerCase().includes(currentTopic.toLowerCase()));
+      const selected = expertPersonas.length ? expertPersonas : this.personas;
+      // Structured format: clarify
+      for (const persona of selected) {
+        const clarifyPrompt = `Clarify the main issue in: "${currentTopic}"`;
+        const clarify = await callLLM(persona.systemPrompt, clarifyPrompt, persona.temperature, persona.maxTokens, persona.id);
+        results.push({ step: 'clarify', persona, response: clarify });
+        this.context.addMessage(clarify);
+        effectiveness++;
+      }
+      // Explore
+      for (const persona of selected) {
+        const explorePrompt = `Explore possible solutions for: "${currentTopic}"`;
+        const explore = await callLLM(persona.systemPrompt, explorePrompt, persona.temperature, persona.maxTokens, persona.id);
+        results.push({ step: 'explore', persona, response: explore });
+        this.context.addMessage(explore);
+        effectiveness++;
+      }
+      // Synthesize
+      for (const persona of selected) {
+        const synthPrompt = `Synthesize the best ideas for: "${currentTopic}"`;
+        const synth = await callLLM(persona.systemPrompt, synthPrompt, persona.temperature, persona.maxTokens, persona.id);
+        results.push({ step: 'synthesize', persona, response: synth });
+        this.context.addMessage(synth);
+        effectiveness++;
+      }
+      depth++;
+      // Prevent circular discussions by checking if topic repeats
+      currentTopic = thread.topic + ` (deep dive ${depth})`;
+    }
+    // Metrics tracking for deep-dive effectiveness
+    if (this.metrics) {
+      this.metrics.deepDiveEffectiveness = (this.metrics.deepDiveEffectiveness || 0) + effectiveness;
+    }
+    return results;
+  }
   constructor(personas, enableCrossTalk = true, metricsCollector) {
     this.personas = personas;
     this.enableCrossTalk = enableCrossTalk;
