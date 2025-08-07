@@ -1,32 +1,42 @@
 // Persona relevance selector for multi-agent discussions
 class PersonaSelector {
   detectDomain(problem) {
-    // Simple keyword-based domain detection
-    const technical = /tech|implement|system|architecture|algorithm|code/.test(problem.toLowerCase());
-    const creative = /innovate|creative|idea|intuitive|unconventional/.test(problem.toLowerCase());
-    const strategic = /strategy|plan|decision|priority|risk/.test(problem.toLowerCase());
-    const operational = /process|step|operation|execute|minimal/.test(problem.toLowerCase());
-    if (technical) return 'technical';
-    if (creative) return 'creative';
-    if (strategic) return 'strategic';
-    if (operational) return 'operational';
+    // Enhanced keyword-based domain detection for new personas
+    const text = problem.toLowerCase();
+    if (/tech|implement|system|architecture|algorithm|code|technical|detail|breakdown/.test(text)) return 'technical';
+    if (/innovate|creative|idea|intuitive|unconventional|artist|art|story|narrative|myth/.test(text)) return 'creative';
+    if (/strategy|plan|decision|priority|risk|moral|philosophy|cost|economics|bureaucracy|policy/.test(text)) return 'strategic';
+    if (/process|step|operation|execute|minimal|agile|experiment|prototype|incremental/.test(text)) return 'operational';
+    if (/empathy|emotion|society|social|group|communicate|audience/.test(text)) return 'human';
     return 'general';
   }
 
   getCompatibilityMatrix() {
-    // Example compatibility matrix (personaId pairs that work well together)
+    // Expanded compatibility matrix for new personas
     return {
-      'PRAG': ['TECH', 'SAFE', 'OPT'],
-      'TECH': ['PRAG', 'INNOV', 'RAT'],
-      'OPT': ['INNOV', 'IRRAT', 'PRAG'],
-      'PESS': ['SAFE', 'CRIT', 'OVER'],
-      'SAFE': ['PESS', 'TECH', 'CRIT'],
-      'CRIT': ['PESS', 'SAFE', 'RAT'],
-      'LAZY': ['PRAG', 'OPT'],
-      'OVER': ['CRIT', 'PESS'],
-      'RAT': ['TECH', 'CRIT'],
-      'IRRAT': ['INNOV', 'OPT'],
-      'INNOV': ['TECH', 'OPT', 'IRRAT']
+      'PRAG': ['TECH', 'SAFE', 'OPT', 'PLAN', 'LAZY'],
+      'TECH': ['PRAG', 'INNOV', 'RAT', 'SYSTEM', 'SAFE'],
+      'OPT': ['INNOV', 'IRRAT', 'PRAG', 'ART', 'EMP'],
+      'PESS': ['SAFE', 'CRIT', 'OVER', 'MORAL', 'BUREAU'],
+      'SAFE': ['PESS', 'TECH', 'CRIT', 'SYSTEM', 'MORAL'],
+      'CRIT': ['PESS', 'SAFE', 'RAT', 'OVER', 'PLAN'],
+      'LAZY': ['PRAG', 'OPT', 'AGIL'],
+      'OVER': ['CRIT', 'PESS', 'TECH'],
+      'RAT': ['TECH', 'CRIT', 'PLAN'],
+      'IRRAT': ['INNOV', 'OPT', 'ART', 'MYTH'],
+      'INNOV': ['TECH', 'OPT', 'IRRAT', 'EXP'],
+      'SYSTEM': ['TECH', 'SAFE', 'PLAN'],
+      'PLAN': ['PRAG', 'CRIT', 'RAT', 'SYSTEM'],
+      'EMP': ['OPT', 'SOC', 'COMM'],
+      'SOC': ['EMP', 'COMM', 'ART'],
+      'COMM': ['EMP', 'SOC', 'ART'],
+      'EXP': ['INNOV', 'AGIL', 'LAZY'],
+      'AGIL': ['EXP', 'LAZY', 'PRAG'],
+      'MORAL': ['SAFE', 'PESS', 'PLAN'],
+      'COST': ['PLAN', 'BUREAU', 'PRAG'],
+      'BUREAU': ['COST', 'PESS', 'SAFE'],
+      'ART': ['OPT', 'IRRAT', 'SOC', 'COMM', 'MYTH'],
+      'MYTH': ['ART', 'IRRAT', 'OPT']
     };
   }
 
@@ -36,19 +46,21 @@ class PersonaSelector {
     let team = [];
     // Select by domain
     if (domain === 'technical') {
-      team = availablePersonas.filter(p => ['TECH', 'PRAG', 'SAFE', 'INNOV', 'RAT'].includes(p.id));
+      team = availablePersonas.filter(p => ['TECH', 'PRAG', 'SAFE', 'INNOV', 'RAT', 'SYSTEM'].includes(p.id));
     } else if (domain === 'creative') {
-      team = availablePersonas.filter(p => ['INNOV', 'IRRAT', 'OPT', 'LAZY'].includes(p.id));
+      team = availablePersonas.filter(p => ['INNOV', 'IRRAT', 'OPT', 'LAZY', 'ART', 'MYTH'].includes(p.id));
     } else if (domain === 'strategic') {
-      team = availablePersonas.filter(p => ['PRAG', 'PESS', 'CRIT', 'SAFE', 'OVER'].includes(p.id));
+      team = availablePersonas.filter(p => ['PRAG', 'PESS', 'CRIT', 'SAFE', 'OVER', 'PLAN', 'MORAL', 'COST', 'BUREAU'].includes(p.id));
     } else if (domain === 'operational') {
-      team = availablePersonas.filter(p => ['PRAG', 'LAZY', 'TECH', 'SAFE'].includes(p.id));
+      team = availablePersonas.filter(p => ['PRAG', 'LAZY', 'TECH', 'SAFE', 'AGIL', 'EXP'].includes(p.id));
+    } else if (domain === 'human') {
+      team = availablePersonas.filter(p => ['EMP', 'SOC', 'COMM', 'OPT', 'ART'].includes(p.id));
     } else {
       team = availablePersonas.slice(0, 4);
     }
     // Ensure minimum diversity (always include a contrarian)
-    if (minDiversity && !team.some(p => p.id === 'PESS' || p.id === 'CRIT' || p.id === 'OVER')) {
-      const contrarian = availablePersonas.find(p => ['PESS', 'CRIT', 'OVER'].includes(p.id));
+    if (minDiversity && !team.some(p => ['PESS', 'CRIT', 'OVER', 'LAZY', 'IRRAT', 'BUREAU'].includes(p.id))) {
+      const contrarian = availablePersonas.find(p => ['PESS', 'CRIT', 'OVER', 'LAZY', 'IRRAT', 'BUREAU'].includes(p.id));
       if (contrarian) team.push(contrarian);
     }
     // Use compatibility matrix to add compatible personas

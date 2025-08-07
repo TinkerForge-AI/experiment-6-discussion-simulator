@@ -99,6 +99,104 @@ const personas = [
     systemPrompt: 'Propose innovative and unproven approaches to the problem.',
     temperature: 0.7,
     maxTokens: 512
+  }),
+
+  // New additions
+  new Persona({
+    id: 'SYSTEM',
+    name: 'Systems Thinker',
+    description: 'Looks at interconnected systems and emergent behavior.',
+    systemPrompt: 'Analyze the problem as part of a larger system and identify feedback loops or emergent consequences.',
+    temperature: 0.4,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'PLAN',
+    name: 'Strategist',
+    description: 'Focuses on long-term planning and future trade-offs.',
+    systemPrompt: 'Create a strategic plan with phases, milestones, and contingencies over time.',
+    temperature: 0.4,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'EMP',
+    name: 'Empath',
+    description: 'Prioritizes emotional, human-centered impacts.',
+    systemPrompt: 'Consider how different people will feel and respond to this idea or solution.',
+    temperature: 0.6,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'SOC',
+    name: 'Sociologist',
+    description: 'Analyzes social, cultural, and group behavior impacts.',
+    systemPrompt: 'Analyze the societal, cultural, or group impacts of this idea.',
+    temperature: 0.5,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'COMM',
+    name: 'Communicator',
+    description: 'Focuses on explaining and persuading audiences.',
+    systemPrompt: 'Frame and communicate this idea clearly for different audiences.',
+    temperature: 0.6,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'EXP',
+    name: 'Experimenter',
+    description: 'Tests ideas through quick experiments and iteration.',
+    systemPrompt: 'Suggest experiments or prototypes to test this idea quickly.',
+    temperature: 0.6,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'AGIL',
+    name: 'Agilist',
+    description: 'Prefers incremental progress and rapid iteration.',
+    systemPrompt: 'Break the solution into incremental steps that can adapt over time.',
+    temperature: 0.5,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'MORAL',
+    name: 'Moral Philosopher',
+    description: 'Considers justice, fairness, and deeper values.',
+    systemPrompt: 'Evaluate this idea based on moral and philosophical principles.',
+    temperature: 0.3,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'COST',
+    name: 'Economist',
+    description: 'Focuses on cost-benefit trade-offs and incentives.',
+    systemPrompt: 'Evaluate the economic feasibility, incentives, and opportunity costs.',
+    temperature: 0.4,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'BUREAU',
+    name: 'Bureaucrat',
+    description: 'Considers rules, compliance, and policy constraints.',
+    systemPrompt: 'Analyze how regulations, policy, or bureaucracy might enable or block this idea.',
+    temperature: 0.3,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'ART',
+    name: 'Artist',
+    description: 'Thinks through creative, emotional, and aesthetic lenses.',
+    systemPrompt: 'Express or reshape this problem creatively through metaphor or emotion.',
+    temperature: 0.95,
+    maxTokens: 512
+  }),
+  new Persona({
+    id: 'MYTH',
+    name: 'Narrative Thinker',
+    description: 'Explores meaning through storytelling and archetypes.',
+    systemPrompt: 'Tell a story or parable that captures the essence of this idea.',
+    temperature: 0.9,
+    maxTokens: 512
   })
 ];
 
@@ -127,6 +225,30 @@ function getMockResponse(personaId, problem) {
       return `Intuitive ideas for "${problem}": Consider creative, unconventional, or gut-feeling approaches.`;
     case 'INNOV':
       return `Innovative approach for "${problem}": Propose unproven, experimental, or breakthrough solutions.`;
+    case 'SYSTEM':
+      return `Systems thinking for "${problem}": Consider how this fits into larger systems, feedback loops, and emergent consequences.`;
+    case 'PLAN':
+      return `Strategic plan for "${problem}": Lay out phases, milestones, and contingencies for long-term success.`;
+    case 'EMP':
+      return `Empathic perspective for "${problem}": Consider the emotional and human-centered impacts on all stakeholders.`;
+    case 'SOC':
+      return `Sociological analysis for "${problem}": Examine the social, cultural, and group behavior impacts of this idea.`;
+    case 'COMM':
+      return `Communication strategy for "${problem}": Frame and communicate this idea clearly for different audiences.`;
+    case 'EXP':
+      return `Experimentation for "${problem}": Suggest quick experiments or prototypes to test this idea.`;
+    case 'AGIL':
+      return `Agile approach for "${problem}": Break the solution into incremental steps that can adapt over time.`;
+    case 'MORAL':
+      return `Moral evaluation for "${problem}": Consider justice, fairness, and deeper values in this idea.`;
+    case 'COST':
+      return `Economic analysis for "${problem}": Evaluate feasibility, incentives, and opportunity costs.`;
+    case 'BUREAU':
+      return `Bureaucratic perspective for "${problem}": Analyze how regulations, policy, or bureaucracy might affect this idea.`;
+    case 'ART':
+      return `Artistic lens for "${problem}": Express or reshape this problem creatively through metaphor or emotion.`;
+    case 'MYTH':
+      return `Narrative approach for "${problem}": Tell a story or parable that captures the essence of this idea.`;
     default:
       return `Default response for: ${problem}`;
   }
