@@ -56,6 +56,16 @@ class Moderator {
     return `Persona ${respondingPersona.name}, please respond to ${targetPersona.name}'s statement: "${targetResponse}"`;
   }
 
+  getDiscussionTreeMarkdown() {
+    // Build a Markdown representation of the discussion tree
+    let md = '# Discussion Flow\n';
+    for (const node of this.discussionTree) {
+      const parent = node.parentPersonaId ? ` (in response to ${node.parentPersonaId})` : '';
+      md += `\n- **${node.personaId}**${parent}:\n    > ${node.response.replace(/\n/g, '\n    > ')}`;
+    }
+    return md;
+  }
+
   _addToTree(persona, response, parentPersona = null) {
     // Track discussion flow in a tree structure
     this.discussionTree.push({
